@@ -11,8 +11,26 @@ mkdir -p $HOME/bin && ln -s sh-dependency/dependency.sh $HOME/bin/dependency.sh;
 
 # Usage
 ```bash
+# For example, if you're making a new function or script and
+# you want to make sure all of the dependencies are present,
+# you can call dependency.sh at the start to let users know.
 get_git_branch() {
     dependency.sh -d git || return $?;
+    git rev-parse --abbrev-ref HEAD;
+}
+
+# You could also add an argument to your script to optionally
+# try to install any missing dependencies.
+get_git_branch_install() {
+    local shouldInstall;
+    shouldInstall="$1";
+    if [ -z "$shouldInstall" ]; then
+        dependency.sh -d git || return $?;
+    else
+        # Tries to install git if it's not already installed.
+        dependency.sh -d git -i || return $?;
+    fi
+    
     git rev-parse --abbrev-ref HEAD;
 }
 ```
